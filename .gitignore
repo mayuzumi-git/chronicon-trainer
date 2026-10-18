@@ -1,0 +1,7 @@
+/src/Chronicon修改器.exe
+/work/
+*.pdb
+*.user
+*.suo
+.vs/
+/runtime-package/

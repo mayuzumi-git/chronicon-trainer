@@ -1,0 +1,14 @@
+using System;
+using System.Drawing;
+using System.IO;
+using System.Linq;
+using System.Reflection;
+using System.Windows.Forms;
+public static class ValidateLayoutUI {
+ static T Field<T>(object o,string n){return (T)o.GetType().GetField(n,BindingFlags.Instance|BindingFlags.NonPublic).GetValue(o);}
+ static void Check(bool v,string m){if(!v)throw new Exception(m);}
+ static void Shot(Form f,string file){using(var b=new Bitmap(f.Width,f.Height)){f.DrawToBitmap(b,new Rectangle(Point.Empty,f.Size));b.Save(file);}}
+ [STAThread]public static void Main(){Application.EnableVisualStyles();Directory.CreateDirectory("work");using(var w=new MainWindow()){w.Show();Application.DoEvents();var list=Field<ListBox>(w,"features");var pages=Field<Panel[]>(w,"pages");Check(list.Items.Count==6,"Six independent feature pages");for(int i=0;i<6;i++){list.SelectedIndex=i;Application.DoEvents();Check(pages[i].Visible&&pages.Count(p=>p.Visible)==1,"Only selected page visible");Check(list.Right<pages[i].Left,"Left navigation / right editor");foreach(Control c in pages[i].Controls)Check(c.Right<=pages[i].Width&&c.Bottom<=pages[i].Height,"Page control bounds");Shot(w,"work/main_v3_"+i+".png");}Check(!Field<CheckBox>(w,"materialsEnabled").Checked,"Drop feature defaults disabled");Check(Field<NumericUpDown>(w,"materialMultiplier").Minimum==1&&Field<NumericUpDown>(w,"materialMultiplier").Maximum==1000,"Multiplier bounds");w.Close();}
+ using(var w=new InventoryWindow(null)){w.Show();Application.DoEvents();var tree=Field<TreeView>(w,"category");var items=Field<ListBox>(w,"items");Check(tree.Nodes.Count==5,"Equipment/materials/gems/runes/crystal categories");tree.SelectedNode=tree.Nodes[0].Nodes[0];Application.DoEvents();Check(items.Items.Count==23&&items.Items.Cast<ItemEntry>().All(x=>x.Type==29),"23 implements under equipment");Check(!items.Items.Cast<ItemEntry>().Any(x=>x.Id==731),"Crafted codex removed from generation catalog");items.SelectedIndex=Array.FindIndex(items.Items.Cast<ItemEntry>().ToArray(),x=>x.Id==699);Check(Field<Button>(w,"add").Enabled,"Drop implement generation remains enabled");Shot(w,"work/inventory_v3_implements.png");tree.SelectedNode=tree.Nodes[3];Application.DoEvents();Check(items.Items.Count==121&&items.Items.Cast<ItemEntry>().Any(x=>x.Id==741),"Combined blank and lesser rune category");Shot(w,"work/inventory_v3_runes.png");tree.SelectedNode=tree.Nodes[4];Application.DoEvents();Check(items.Items.Count==1&&((ItemEntry)items.Items[0]).Id==0,"Dedicated crystal 0 entry");Check(!tree.Nodes.Cast<TreeNode>().Any(x=>x.Text.Contains("代币")||x.Text.Contains("货币")),"No currency category");tree.SelectedNode=tree.Nodes[0];Application.DoEvents();Check(items.Items.Count==697,"Complete equipment catalog");Shot(w,"work/inventory_v3_equipment.png");w.Close();}
+ Console.WriteLine("PASS: six independent pages, bounds, disabled defaults; 23 implements nested in equipment; 121 merged runes; crystal-only entry; 697 equipment.");}
+}
