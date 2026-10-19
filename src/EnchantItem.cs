@@ -9,10 +9,12 @@ public sealed class EnchantItem {
     public int NativeSlotLimit=SlotCapacity;
     public string Serialized; public long Reference,GlobalAddress; public readonly Dictionary<string,object> Fields=new Dictionary<string,object>();
     public int Id { get { return (int)Get("id"); } }
-    public double Get(string key) { object value; if(!Fields.TryGetValue(key,out value) || !(value is double)) throw new Exception("装备字段缺失："+key); return (double)value; }
+    public double Get(string key) { object value; if(Fields.TryGetValue(key,out value)) { if(value is double)return (double)value;if(value is int)return (int)value;if(value is long)return (long)value; }throw new Exception("装备字段缺失："+key); }
     static object ReadValue(BinaryReader reader) {
         int type=reader.ReadInt32();
         if(type==0 || type==13) return reader.ReadDouble();
+        if(type==7) return reader.ReadInt32();
+        if(type==10) return reader.ReadInt64();
         if(type==1) { int length=reader.ReadInt32(); if(length<0 || length>65536 || length>reader.BaseStream.Length-reader.BaseStream.Position) throw new Exception("装备文本长度无效。"); return Encoding.Default.GetString(reader.ReadBytes(length)); }
         throw new Exception("不支持的装备字段类型："+type);
     }

@@ -1,13 +1,19 @@
-# Chronicon 综合修改器 v3.0
+# Chronicon 综合修改器 v3.0.1
 
 Windows x64 单人游戏工具，支持寻宝值、拾取范围、随机装备品质、独特敌人追踪、地图点亮、物品添加与附魔预选。
 
 ## 使用
 
-1. [下载 v3.0 发布包](https://github.com/mayuzumi-git/chronicon-trainer/raw/refs/heads/main/dist/Chronicon-Trainer-v3.0.zip) 并解压，运行 `Chronicon修改器.exe`；也可使用仓库 `bin` 下的程序。
+1. [下载 v3.0.1 发布包](https://github.com/mayuzumi-git/chronicon-trainer/raw/refs/heads/main/dist/Chronicon-Trainer-v3.0.1.zip) 并解压，运行 `Chronicon修改器.exe`；也可使用仓库 `bin` 下的程序。
 2. 启动游戏并进入角色，点击「连接游戏」。
 3. 在左侧选择功能，在右侧设置开关与数值并应用。游戏暂停时，主线程请求会等待，请切回游戏。
 4. 正常退出工具会恢复运行时补丁。已获得物品和已探索地图由游戏正常保存。
+
+## v3.0.1 修复
+
+- 支持诅咒、赐福装备的 32 位及 64 位整数字段，修复读取时提示「不支持的装备字段类型：10」的问题。
+- 保留原始序列化数据和固定／锁定保护；诅咒「最终定论」与赐福「多重击」均已通过只读验证。
+- 详细验证范围见 [v3.0.1 修复说明](docs/v3.0.1修复说明.md)。
 
 ## v3.0
 
